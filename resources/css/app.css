@@ -816,12 +816,37 @@ textarea {
 
     .journal-nav {
         min-height: auto;
+        align-items: center;
     }
 
     .journal-links {
+        justify-content: center;
         width: 100%;
         gap: 0.65rem 0.85rem;
         line-height: 1.5;
+    }
+
+    .journal-hero-copy,
+    .journal-hero-media,
+    .journal-section-heading,
+    .journal-about-inner,
+    .journal-newsletter,
+    .journal-auth-copy,
+    .journal-form-intro {
+        text-align: center;
+    }
+
+    .journal-hero-copy,
+    .journal-hero h1,
+    .journal-lede,
+    .journal-section-heading > p,
+    .journal-about h2,
+    .journal-about p:not(.journal-kicker),
+    .journal-newsletter h2,
+    .journal-newsletter p:not(.journal-kicker),
+    .journal-auth-copy > p:not(.journal-kicker),
+    .journal-form-intro > p:not(.journal-kicker) {
+        margin-inline: auto;
     }
 
     .journal-hero,
@@ -848,6 +873,11 @@ textarea {
         gap: 0.65rem;
     }
 
+    .journal-meta-row {
+        align-items: center;
+        justify-content: center;
+    }
+
     .journal-section {
         padding-block: 3.5rem;
     }
@@ -866,6 +896,12 @@ textarea {
     .journal-newsletter-form > div,
     .journal-form-actions {
         width: 100%;
+    }
+
+    .journal-newsletter-form {
+        max-width: 25rem;
+        margin-inline: auto;
+        text-align: left;
     }
 
     .journal-auth-form {
