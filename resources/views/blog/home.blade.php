@@ -52,16 +52,18 @@
             <div class="journal-grid">
                 @foreach ($articlesRecents as $article)
                     <article class="journal-card">
-                        <img src="{{ $article->image ?: $images[($loop->index + 1) % count($images)] }}" alt="Illustration de {{ $article->titre }}">
-                        <div class="journal-card-body">
-                            <p class="journal-kicker">{{ ['Voyages', 'Culture', 'Nature', 'Design', 'À table', 'Création'][$loop->index % 6] }}</p>
-                            <h3>{{ $article->titre }}</h3>
-                            <p>{{ \Illuminate\Support\Str::limit($article->contenu, 105) }}</p>
-                            <div class="journal-card-footer">
-                                <time datetime="{{ $article->created_at->toDateString() }}">{{ $article->created_at->translatedFormat('j F Y') }}</time>
-                                <a href="{{ route('blog.articles.show', $article->slug) }}">Lire l'article</a>
+                        <a href="{{ route('blog.articles.show', $article->slug) }}" class="journal-card-link">
+                            <img src="{{ $article->image ?: $images[($loop->index + 1) % count($images)] }}" alt="Illustration de {{ $article->titre }}">
+                            <div class="journal-card-body">
+                                <p class="journal-kicker">{{ ['Voyages', 'Culture', 'Nature', 'Design', 'À table', 'Création'][$loop->index % 6] }}</p>
+                                <h3>{{ $article->titre }}</h3>
+                                <p>{{ \Illuminate\Support\Str::limit($article->contenu, 105) }}</p>
+                                <div class="journal-card-footer">
+                                    <time datetime="{{ $article->created_at->toDateString() }}">{{ $article->created_at->translatedFormat('j F Y') }}</time>
+                                    <span>Lire l'article</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </article>
                 @endforeach
             </div>

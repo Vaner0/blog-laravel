@@ -306,6 +306,20 @@ textarea {
 .journal-card {
     border: 1px solid #ded6c9;
     background: #fbf8f1;
+    transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.journal-card:hover {
+    border-color: #bd5a42;
+    box-shadow: 0 0.75rem 2rem #24352d12;
+    transform: translateY(-2px);
+}
+
+.journal-card-link {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    color: inherit;
 }
 
 .journal-card img {
