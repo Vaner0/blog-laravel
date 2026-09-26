@@ -115,6 +115,7 @@ Variables attendues :
 | `DB_SSLMODE` | `require` | Chiffrement de la connexion PostgreSQL. |
 | `REDIS_CLIENT` | `predis` | Client Redis utilisé par Laravel. |
 | `REDIS_URL` | URL Redis `rediss://...` | Connexion à Upstash Redis. |
+| `REDIS_CACHE_DB` | `0` | Base logique Redis utilisée par le cache Upstash. |
 | `CACHE_STORE` | `redis` | Stockage du cache dans Redis. |
 | `SESSION_DRIVER` | `database` | Stockage des sessions dans PostgreSQL. |
 | `QUEUE_CONNECTION` | `database` | Stockage des jobs dans PostgreSQL. |
@@ -187,6 +188,18 @@ La connexion poolée Neon a fonctionné pour les migrations de ce projet. Une co
 4. La saisir uniquement dans Render, variable `REDIS_URL`.
 
 L'éviction est adaptée ici car Redis ne sert qu'au cache. Les sessions et la queue utilisent PostgreSQL. Une entrée de cache supprimée peut être recalculée par Laravel.
+
+Upstash ne prend en charge que la base logique Redis `0`. Laravel utilise souvent la base `1` pour sa connexion de cache par défaut. Il faut donc ajouter cette variable dans Render :
+
+```text
+REDIS_CACHE_DB=0
+```
+
+Sans cette variable, Laravel peut échouer avec :
+
+```text
+ERR Only 0th database is supported! Selected DB: 1
+```
 
 ## 7. Structure du déploiement Docker
 
