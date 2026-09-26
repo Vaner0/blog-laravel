@@ -27,6 +27,8 @@ services:
         value: redis
       - key: REDIS_CLIENT
         value: predis
+      - key: REDIS_CACHE_DB
+        value: "0"
       - key: REDIS_URL
         sync: false
       - key: QUEUE_CONNECTION
