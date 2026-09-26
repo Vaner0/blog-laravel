@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [BlogController::class, 'index'])->name('blog.home');
 
 Route::get('/connexion', [WebAuthController::class, 'showLogin'])->name('blog.login');
+Route::get('/connexion/google', [WebAuthController::class, 'redirectToGoogle'])->name('blog.login.google');
+Route::get('/connexion/google/callback', [WebAuthController::class, 'handleGoogleCallback'])->name('blog.login.google.callback');
 Route::redirect('/login', '/connexion')->name('login');
 Route::post('/connexion', [WebAuthController::class, 'login'])->name('blog.login.store');
 Route::get('/inscription', [WebAuthController::class, 'showRegister'])->name('blog.register');

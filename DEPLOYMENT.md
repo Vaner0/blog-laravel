@@ -122,6 +122,19 @@ Variables attendues :
 | `LOG_CHANNEL` | `stderr` | Envoie les logs vers Render. |
 | `APP_LOCALE` | `fr` | Langue principale. |
 | `APP_FALLBACK_LOCALE` | `fr` | Langue de secours. |
+| `GOOGLE_CLIENT_ID` | Identifiant client Google | Identifiant OAuth Google. |
+| `GOOGLE_CLIENT_SECRET` | Secret client Google | Secret OAuth Google. |
+| `GOOGLE_REDIRECT_URI` | URL callback publique | `https://blog-laravel-9q6j.onrender.com/connexion/google/callback` |
+
+### Google OAuth
+
+Google OAuth utilise Laravel Socialite. Dans Google Cloud Console, crée un client OAuth de type **Application Web**, puis ajoute cette URL dans les **URI de redirection autorisés** :
+
+```text
+https://blog-laravel-9q6j.onrender.com/connexion/google/callback
+```
+
+Dans Render, ajoute ensuite `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` et `GOOGLE_REDIRECT_URI`. Le bouton Google apparaît sur la page `/connexion`. Une adresse Google existante est liée au compte correspondant; sinon un compte est créé automatiquement.
 
 ### Important pour `DB_URL`
 

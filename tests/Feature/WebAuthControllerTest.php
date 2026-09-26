@@ -14,7 +14,11 @@ class WebAuthControllerTest extends TestCase
     {
         $this->get('/connexion')
             ->assertOk()
-            ->assertSee('Retrouver le fil.');
+            ->assertSee('Retrouver le fil.')
+            ->assertSee('Continuer avec Google');
+
+        $this->get('/connexion/google')
+            ->assertRedirect();
 
         $this->get('/inscription')
             ->assertOk()

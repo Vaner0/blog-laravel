@@ -11,6 +11,11 @@
         </div>
         <form action="{{ route('blog.login.store') }}" method="POST" class="journal-form journal-auth-form">
             @csrf
+            <a href="{{ route('blog.login.google') }}" class="journal-button journal-button-google">
+                <span aria-hidden="true">G</span>
+                Continuer avec Google
+            </a>
+            <div class="journal-auth-divider"><span>ou avec votre e-mail</span></div>
             <div class="journal-field">
                 <label for="email">Adresse e-mail</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required>

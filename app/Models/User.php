@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'google_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,7 +31,6 @@ class User extends Authenticatable
         ];
     }
 
-
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -41,5 +40,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Commentaire::class);
     }
-    
 }

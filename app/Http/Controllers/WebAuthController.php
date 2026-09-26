@@ -8,12 +8,45 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Laravel\Socialite\Facades\Socialite;
 
 class WebAuthController extends Controller
 {
     public function showLogin(): View
     {
         return view('blog.auth.login');
+    }
+
+    public function redirectToGoogle(): RedirectResponse
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback(Request $request): RedirectResponse
+    {
+        $googleUser = Socialite::driver('google')->user();
+
+        $user = User::updateOrCreate(
+            ['email' => $googleUser->getEmail()],
+            [
+                'name' => $googleUser->getName() ?: $googleUser->getNickname() ?: 'Utilisateur Google',
+                'google_id' => $googleUser->getId(),
+                'email_verified_at' => now(),
+                'password' => Hash::make(bin2hex(random_bytes(32))),
+            ],
+        );
+
+        if ($user->google_id !== $googleUser->getId()) {
+            $user->update([
+                'google_id' => $googleUser->getId(),
+                'email_verified_at' => $user->email_verified_at ?: now(),
+            ]);
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('blog.home'));
     }
 
     public function login(Request $request): RedirectResponse
@@ -23,7 +56,7 @@ class WebAuthController extends Controller
             'mot_de_passe' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt([
+        if (! Auth::attempt([
             'email' => $donneesConnexion['email'],
             'password' => $donneesConnexion['mot_de_passe'],
         ])) {
