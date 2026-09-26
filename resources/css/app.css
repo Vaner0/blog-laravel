@@ -93,6 +93,30 @@ textarea {
     transition: color 180ms ease;
 }
 
+.journal-links a {
+    position: relative;
+    padding-block: 0.25rem;
+}
+
+.journal-links a::after {
+    position: absolute;
+    right: 0;
+    bottom: -0.15rem;
+    left: 0;
+    height: 1px;
+    background: #bd5a42;
+    content: '';
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 180ms ease;
+}
+
+.journal-links a:hover::after,
+.journal-links a:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
 .journal-links a:hover,
 .journal-link-button:hover {
     color: #bd5a42;
