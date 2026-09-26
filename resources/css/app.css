@@ -44,7 +44,6 @@ textarea {
 
 .journal-shell {
     min-height: 100vh;
-    overflow-x: hidden;
     background: #f7f3ec;
     color: #24352d;
 }
@@ -97,6 +96,11 @@ textarea {
 .journal-links a:hover,
 .journal-link-button:hover {
     color: #bd5a42;
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid #d9a654;
+    outline-offset: 3px;
 }
 
 .journal-nav-accent {
@@ -197,6 +201,7 @@ textarea {
 }
 
 .journal-meta-row {
+    flex-wrap: wrap;
     color: #6d756c;
     font-size: 0.72rem;
 }
@@ -288,7 +293,7 @@ textarea {
     margin: 0;
     color: #687067;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     line-height: 1.4;
 }
 
@@ -331,15 +336,17 @@ textarea {
     margin: 0.75rem 0 1rem;
     color: #687067;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.8rem;
+    font-size: 0.86rem;
     line-height: 1.45;
 }
 
 .journal-card-footer {
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-top: auto;
+    row-gap: 0.6rem;
     color: #7a8178;
-    font-size: 0.67rem;
+    font-size: 0.72rem;
 }
 
 .journal-card-footer a,
@@ -379,7 +386,7 @@ textarea {
     margin: 1rem 0 0;
     color: #5b625a;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.92rem;
+    font-size: 0.98rem;
     line-height: 1.5;
 }
 
@@ -434,6 +441,10 @@ textarea {
     background: #fffaf3;
     color: #24352d;
     outline: none;
+}
+
+.journal-newsletter-form input:focus-visible {
+    outline-color: #f0c978;
 }
 
 .journal-footer {
@@ -507,12 +518,21 @@ textarea {
     align-items: start;
 }
 
+.journal-article-body,
+.journal-comment-panel,
+.journal-form,
+.journal-auth-copy,
+.journal-auth-form {
+    min-width: 0;
+}
+
 .journal-article-image {
     max-height: 31rem;
     margin-bottom: 2.5rem;
 }
 
 .journal-prose {
+    overflow-wrap: anywhere;
     color: #4d594f;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: 1.14rem;
@@ -594,7 +614,9 @@ textarea {
 }
 
 .journal-comment-topline {
+    flex-wrap: wrap;
     justify-content: space-between;
+    row-gap: 0.35rem;
     font-size: 0.73rem;
 }
 
@@ -604,6 +626,7 @@ textarea {
 }
 
 .journal-comment p {
+    overflow-wrap: anywhere;
     margin: 0.55rem 0;
     color: #5d675e;
     font-family: Georgia, 'Times New Roman', serif;
@@ -656,6 +679,7 @@ textarea {
 }
 
 .journal-form-actions {
+    flex-wrap: wrap;
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
@@ -671,9 +695,30 @@ textarea {
 }
 
 .journal-auth-form {
+    align-self: start;
     padding: 2rem;
     border: 1px solid #ded6c9;
     background: #fbf8f1;
+}
+
+@media (max-width: 980px) {
+    .journal-hero {
+        gap: 3rem;
+    }
+
+    .journal-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .journal-article-layout {
+        grid-template-columns: minmax(0, 1.45fr) minmax(15rem, 0.8fr);
+        gap: 2.5rem;
+    }
+
+    .journal-form-page,
+    .journal-auth-page {
+        gap: 3rem;
+    }
 }
 
 @media (max-width: 780px) {
@@ -727,6 +772,10 @@ textarea {
         grid-template-columns: 1fr;
     }
 
+    .journal-article-layout {
+        gap: 3.5rem;
+    }
+
     .journal-newsletter {
         gap: 1.5rem;
         padding: 1.5rem;
@@ -757,5 +806,78 @@ textarea {
 
     .journal-footer-grid > div:first-child {
         grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 560px) {
+    .journal-container {
+        width: min(100% - 1.5rem, 1060px);
+    }
+
+    .journal-nav {
+        min-height: auto;
+    }
+
+    .journal-links {
+        width: 100%;
+        gap: 0.65rem 0.85rem;
+        line-height: 1.5;
+    }
+
+    .journal-hero,
+    .journal-article,
+    .journal-form-page,
+    .journal-auth-page {
+        padding-block: 3rem;
+    }
+
+    .journal-hero h1,
+    .journal-article-header h1 {
+        font-size: clamp(2.35rem, 13vw, 3.6rem);
+    }
+
+    .journal-lede {
+        margin-block: 1.25rem;
+        font-size: 0.96rem;
+    }
+
+    .journal-meta-row,
+    .journal-article-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .journal-section {
+        padding-block: 3.5rem;
+    }
+
+    .journal-about-inner,
+    .journal-newsletter {
+        padding-block: 3rem;
+    }
+
+    .journal-newsletter {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        padding-inline: 1.25rem;
+    }
+
+    .journal-newsletter-form > div,
+    .journal-form-actions {
+        width: 100%;
+    }
+
+    .journal-auth-form {
+        padding: 1.25rem;
+    }
+
+    .journal-footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .journal-footer-grid > div:first-child {
+        grid-column: auto;
     }
 }
