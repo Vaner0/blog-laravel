@@ -105,12 +105,16 @@ Le formulaire de création et de modification accepte désormais un fichier JPEG
 1. vérifie le type d'image ;
 2. redimensionne l'image à 1600 pixels de largeur maximum ;
 3. la convertit en WebP avec une qualité de 78 ;
-4. la stocke dans `storage/app/public/articles` ;
+4. l'envoie vers Cloudinary dans le dossier `blog/articles` ;
 5. l'affiche avec les mêmes dimensions visuelles que les cartes grâce à `object-fit: cover`.
 
-Le Dockerfile installe GD avec le support JPEG, PNG et WebP. `storage:link` est exécuté au démarrage pour rendre les fichiers disponibles sous `/storage`.
+Le Dockerfile installe GD avec le support JPEG, PNG et WebP. Le serveur crée temporairement une version WebP légère, l'envoie à Cloudinary, puis supprime le fichier temporaire. Seule l'URL HTTPS Cloudinary et son `public_id` sont conservés dans PostgreSQL.
 
-Le stockage local d'un service Render gratuit est éphémère : les images peuvent disparaître lors d'un nouveau déploiement ou d'un redémarrage complet. Pour conserver les uploads en production, il faudra remplacer le disque `public` par un stockage objet persistant comme Amazon S3, Cloudflare R2 ou un service d'images dédié.
+Ajoute dans Render :
+
+```text
+CLOUDINARY_URL=cloudinary://<api-key>:<api-secret>@<cloud-name>
+```
 
 Les articles qui utilisent déjà une URL externe continuent de fonctionner.
 
@@ -129,6 +133,7 @@ Variables attendues :
 | `DB_CONNECTION` | `pgsql` | Utilise PostgreSQL. |
 | `DB_URL` | URL complète Neon | Connexion à la base distante. |
 | `DB_SSLMODE` | `require` | Chiffrement de la connexion PostgreSQL. |
+| `CLOUDINARY_URL` | URL `cloudinary://...` du compte | Identifiants Cloudinary pour les images d’articles. |
 | `REDIS_CLIENT` | `predis` | Client Redis utilisé par Laravel. |
 | `REDIS_URL` | URL Redis `rediss://...` | Connexion à Upstash Redis. |
 | `REDIS_CACHE_DB` | `0` | Base logique Redis utilisée par le cache Upstash. |

@@ -54,7 +54,9 @@ class BlogController extends Controller
         ]);
 
         if ($request->hasFile('image_fichier')) {
-            $donneesArticle['image'] = $imageService->storeArticleImage($request->file('image_fichier'));
+            $image = $imageService->storeArticleImage($request->file('image_fichier'));
+            $donneesArticle['image'] = $image['url'];
+            $donneesArticle['image_public_id'] = $image['public_id'];
         }
 
         $article = $articleService->creerArticle($donneesArticle, $request->user()->id);
@@ -92,13 +94,20 @@ class BlogController extends Controller
             'image_fichier' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
         ]);
 
+        $oldImage = $article->image;
+        $oldImagePublicId = $article->image_public_id;
+
         if ($request->hasFile('image_fichier')) {
-            $oldImage = $article->image;
-            $donneesArticle['image'] = $imageService->storeArticleImage($request->file('image_fichier'));
-            $imageService->delete($oldImage);
+            $image = $imageService->storeArticleImage($request->file('image_fichier'));
+            $donneesArticle['image'] = $image['url'];
+            $donneesArticle['image_public_id'] = $image['public_id'];
         }
 
         $articleService->modifierArticle($article, $donneesArticle);
+
+        if ($request->hasFile('image_fichier')) {
+            $imageService->delete($oldImage, $oldImagePublicId);
+        }
 
         return redirect()
             ->route('blog.articles.show', $article->slug)
@@ -113,8 +122,10 @@ class BlogController extends Controller
     ): RedirectResponse {
         abort_unless($article->user_id === $request->user()->id, 403);
 
-        $imageService->delete($article->image);
+        $image = $article->image;
+        $imagePublicId = $article->image_public_id;
         $articleService->supprimerArticle($article);
+        $imageService->delete($image, $imagePublicId);
 
         return redirect()
             ->route('blog.home')

@@ -31,6 +31,8 @@ services:
         value: "0"
       - key: REDIS_URL
         sync: false
+      - key: CLOUDINARY_URL
+        sync: false
       - key: QUEUE_CONNECTION
         value: database
       - key: LOG_CHANNEL

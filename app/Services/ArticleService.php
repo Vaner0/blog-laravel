@@ -36,10 +36,11 @@ class ArticleService
     {
         $article = Article::create([
             'user_id' => $userId,
-            'titre'   => $data['titre'],
+            'titre' => $data['titre'],
             'contenu' => $data['contenu'],
-            'statut'  => $data['statut'] ?? 'brouillon',
-            'image'   => $data['image'] ?? null,
+            'statut' => $data['statut'] ?? 'brouillon',
+            'image' => $data['image'] ?? null,
+            'image_public_id' => $data['image_public_id'] ?? null,
         ]);
 
         Cache::forget('articles_ids');

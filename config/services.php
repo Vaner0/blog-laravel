@@ -41,4 +41,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'cloudinary' => [
+        'url' => env('CLOUDINARY_URL'),
+    ],
+
 ];

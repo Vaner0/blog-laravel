@@ -13,6 +13,7 @@ class Article extends Model
         'slug',
         'contenu',
         'image',
+        'image_public_id',
         'statut',
     ];
 

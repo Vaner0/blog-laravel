@@ -3,59 +3,90 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
 
 class ImageService
 {
-    public function storeArticleImage(UploadedFile $image): string
+    public function __construct(private CloudinaryImageClient $cloudinary) {}
+
+    /**
+     * @return array{url: string, public_id: string}
+     */
+    public function storeArticleImage(UploadedFile $image): array
     {
-        $source = $this->createSource($image);
-        $sourceWidth = imagesx($source);
-        $sourceHeight = imagesy($source);
-        $maxWidth = 1600;
-        $targetWidth = min($sourceWidth, $maxWidth);
-        $targetHeight = (int) round($sourceHeight * ($targetWidth / $sourceWidth));
-        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+        $source = null;
+        $canvas = null;
+        $temporaryPath = null;
 
-        imagealphablending($canvas, false);
-        imagesavealpha($canvas, true);
-        imagecopyresampled(
-            $canvas,
-            $source,
-            0,
-            0,
-            0,
-            0,
-            $targetWidth,
-            $targetHeight,
-            $sourceWidth,
-            $sourceHeight,
-        );
+        try {
+            $source = $this->createSource($image);
+            $sourceWidth = imagesx($source);
+            $sourceHeight = imagesy($source);
+            $targetWidth = min($sourceWidth, 1600);
+            $targetHeight = (int) round($sourceHeight * ($targetWidth / $sourceWidth));
+            $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
 
-        $path = 'articles/'.uniqid('', true).'.webp';
-        ob_start();
-        imagewebp($canvas, null, 78);
-        $contents = ob_get_clean();
+            if (! $canvas instanceof \GdImage) {
+                throw new RuntimeException('Impossible de préparer cette image.');
+            }
 
-        if ($contents === false) {
-            imagedestroy($source);
-            imagedestroy($canvas);
-            throw new RuntimeException('Impossible de compresser cette image.');
+            imagealphablending($canvas, false);
+            imagesavealpha($canvas, true);
+            imagefill($canvas, 0, 0, imagecolorallocatealpha($canvas, 0, 0, 0, 127));
+            imagecopyresampled(
+                $canvas,
+                $source,
+                0,
+                0,
+                0,
+                0,
+                $targetWidth,
+                $targetHeight,
+                $sourceWidth,
+                $sourceHeight,
+            );
+
+            $temporaryPath = tempnam(sys_get_temp_dir(), 'blog-image-');
+
+            if ($temporaryPath === false) {
+                throw new RuntimeException('Impossible de créer le fichier temporaire de l’image.');
+            }
+
+            if (! imagewebp($canvas, $temporaryPath, 78)) {
+                throw new RuntimeException('Impossible de compresser cette image.');
+            }
+
+            return $this->cloudinary->upload($temporaryPath);
+        } finally {
+            if ($source instanceof \GdImage) {
+                imagedestroy($source);
+            }
+
+            if ($canvas instanceof \GdImage) {
+                imagedestroy($canvas);
+            }
+
+            if (is_string($temporaryPath) && is_file($temporaryPath) && ! unlink($temporaryPath)) {
+                throw new RuntimeException('Impossible de supprimer le fichier temporaire de l’image.');
+            }
         }
-
-        Storage::disk('public')->put($path, $contents);
-        imagedestroy($source);
-        imagedestroy($canvas);
-
-        return $path;
     }
 
-    public function delete(?string $path): void
+    public function delete(?string $path, ?string $publicId = null): void
     {
+        if ($publicId !== null) {
+            $this->cloudinary->delete($publicId);
+
+            return;
+        }
+
         if ($path !== null && ! Str::startsWith($path, ['http://', 'https://'])) {
-            Storage::disk('public')->delete($path);
+            $localPath = storage_path('app/public/'.$path);
+
+            if (is_file($localPath) && ! unlink($localPath)) {
+                throw new RuntimeException('Impossible de supprimer l’image locale.');
+            }
         }
     }
 
