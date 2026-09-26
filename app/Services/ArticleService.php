@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Article;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class ArticleService
@@ -30,6 +33,27 @@ class ArticleService
         return Article::with(['auteur', 'commentaires.auteur'])
             ->where('slug', $slug)
             ->firstOrFail();
+    }
+
+    public function listerArticlesUtilisateur(User $user, string $statut): LengthAwarePaginator
+    {
+        return $user->articles()
+            ->where('statut', $statut)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+    }
+
+    /**
+     * @return Collection<string, int>
+     */
+    public function compterArticlesUtilisateurParStatut(User $user): Collection
+    {
+        return $user->articles()
+            ->select('statut')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('statut')
+            ->pluck('total', 'statut');
     }
 
     public function creerArticle(array $data, int $userId): Article

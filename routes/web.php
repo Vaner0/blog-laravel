@@ -17,6 +17,8 @@ Route::post('/inscription', [WebAuthController::class, 'register'])->name('blog.
 Route::middleware('auth')->group(function () {
     Route::post('/deconnexion', [WebAuthController::class, 'logout'])->name('blog.logout');
 
+    Route::get('/mes-articles', [BlogController::class, 'mesArticles'])->name('blog.articles.index');
+    Route::post('/mes-articles/{article}/publier', [BlogController::class, 'publier'])->name('blog.articles.publish');
     Route::get('/articles/creer', [BlogController::class, 'create'])->name('blog.articles.create');
     Route::post('/articles', [BlogController::class, 'store'])->name('blog.articles.store');
     Route::get('/articles/{article}/modifier', [BlogController::class, 'edit'])->name('blog.articles.edit');

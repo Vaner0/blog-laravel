@@ -23,10 +23,32 @@ class BlogController extends Controller
         ]);
     }
 
-    public function show(string $slug, ArticleService $articleService): View
+    public function show(Request $request, string $slug, ArticleService $articleService): View
     {
+        $article = $articleService->voirArticle($slug);
+
+        abort_if(
+            $article->statut !== 'publie' && $request->user()?->id !== $article->user_id,
+            404,
+        );
+
         return view('blog.articles.show', [
-            'article' => $articleService->voirArticle($slug),
+            'article' => $article,
+        ]);
+    }
+
+    public function mesArticles(Request $request, ArticleService $articleService): View
+    {
+        $donnees = $request->validate([
+            'statut' => ['sometimes', 'in:brouillon,publie'],
+        ]);
+        $statut = $donnees['statut'] ?? 'brouillon';
+        $user = $request->user();
+
+        return view('blog.articles.index', [
+            'articles' => $articleService->listerArticlesUtilisateur($user, $statut),
+            'statut' => $statut,
+            'totaux' => $articleService->compterArticlesUtilisateurParStatut($user),
         ]);
     }
 
@@ -60,10 +82,11 @@ class BlogController extends Controller
         }
 
         $article = $articleService->creerArticle($donneesArticle, $request->user()->id);
+        $statut = $article->statut;
 
         return redirect()
-            ->route('blog.articles.show', $article->slug)
-            ->with('success', 'Article publié avec succès.');
+            ->route('blog.articles.index', ['statut' => $statut])
+            ->with('success', $statut === 'publie' ? 'Article publié avec succès.' : 'Brouillon enregistré.');
     }
 
     public function edit(Article $article): View
@@ -96,6 +119,7 @@ class BlogController extends Controller
 
         $oldImage = $article->image;
         $oldImagePublicId = $article->image_public_id;
+        $ancienStatut = $article->statut;
 
         if ($request->hasFile('image_fichier')) {
             $image = $imageService->storeArticleImage($request->file('image_fichier'));
@@ -109,9 +133,32 @@ class BlogController extends Controller
             $imageService->delete($oldImage, $oldImagePublicId);
         }
 
+        $statut = $article->statut;
+        $message = match (true) {
+            $ancienStatut !== 'publie' && $statut === 'publie' => 'Article publié avec succès.',
+            $statut === 'brouillon' => 'Brouillon enregistré.',
+            default => 'Article mis à jour.',
+        };
+
         return redirect()
-            ->route('blog.articles.show', $article->slug)
-            ->with('success', 'Article mis à jour.');
+            ->route('blog.articles.index', ['statut' => $statut])
+            ->with('success', $message);
+    }
+
+    public function publier(
+        Request $request,
+        Article $article,
+        ArticleService $articleService,
+    ): RedirectResponse {
+        abort_unless($article->user_id === $request->user()->id, 403);
+
+        if ($article->statut !== 'publie') {
+            $articleService->modifierArticle($article, ['statut' => 'publie']);
+        }
+
+        return redirect()
+            ->route('blog.articles.index', ['statut' => 'publie'])
+            ->with('success', 'Article publié avec succès.');
     }
 
     public function destroy(
@@ -124,11 +171,12 @@ class BlogController extends Controller
 
         $image = $article->image;
         $imagePublicId = $article->image_public_id;
+        $statut = $article->statut;
         $articleService->supprimerArticle($article);
         $imageService->delete($image, $imagePublicId);
 
         return redirect()
-            ->route('blog.home')
+            ->route('blog.articles.index', ['statut' => $statut])
             ->with('success', 'Article supprimé.');
     }
 

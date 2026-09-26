@@ -15,6 +15,9 @@
             @if ($formMethod !== 'POST')
                 @method($formMethod)
             @endif
+            @php
+                $statutInitial = old('statut', $article->statut ?: 'brouillon');
+            @endphp
 
             <div class="journal-field">
                 <label for="titre">Titre</label>
@@ -29,9 +32,9 @@
             <div class="journal-form-row">
                 <div class="journal-field">
                     <label for="statut">Statut</label>
-                    <select id="statut" name="statut" required>
-                        <option value="brouillon" @selected(old('statut', $article->statut ?: 'brouillon') === 'brouillon')>Brouillon</option>
-                        <option value="publie" @selected(old('statut', $article->statut ?: 'brouillon') === 'publie')>Publier maintenant</option>
+                    <select id="statut" name="statut" data-article-status required>
+                        <option value="brouillon" @selected($statutInitial === 'brouillon')>Brouillon</option>
+                        <option value="publie" @selected($statutInitial === 'publie')>Publier maintenant</option>
                     </select>
                 </div>
                 <div class="journal-field">
@@ -45,8 +48,12 @@
             </div>
 
             <div class="journal-form-actions">
-                <a href="{{ $article->exists ? route('blog.articles.show', $article->slug) : route('blog.home') }}" class="journal-button journal-button-quiet">Annuler</a>
-                <button type="submit" class="journal-button">{{ $article->exists ? 'Enregistrer les changements' : 'Enregistrer l’article' }}</button>
+                <a href="{{ $article->exists ? route('blog.articles.index', ['statut' => $article->statut]) : route('blog.home') }}" class="journal-button journal-button-quiet">Annuler</a>
+                <button type="submit" class="journal-button" data-article-submit
+                    data-existing="{{ $article->exists ? 'true' : 'false' }}"
+                    data-initial-status="{{ $article->statut }}">
+                    {{ $article->exists && $article->statut === 'publie' ? 'Enregistrer les modifications' : ($statutInitial === 'publie' ? 'Publier l’article' : 'Enregistrer le brouillon') }}
+                </button>
             </div>
         </form>
     </section>

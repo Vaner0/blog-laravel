@@ -38,10 +38,12 @@ class BlogWebTest extends TestCase
             'statut' => 'publie',
         ]);
 
-        $response->assertRedirect(route('blog.articles.show', 'article-cree-depuis-le-web'));
+        $response->assertRedirect(route('blog.articles.index', ['statut' => 'publie']))
+            ->assertSessionHas('success', 'Article publié avec succès.');
         $this->assertDatabaseHas('articles', [
             'user_id' => $user->id,
             'slug' => 'article-cree-depuis-le-web',
+            'statut' => 'publie',
         ]);
     }
 

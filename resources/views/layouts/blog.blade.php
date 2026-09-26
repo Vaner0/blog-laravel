@@ -16,6 +16,7 @@
                 <a href="{{ route('blog.home') }}#articles">Articles</a>
                 <a href="{{ route('blog.home') }}#a-propos">À propos</a>
                 @auth
+                    <a href="{{ route('blog.articles.index') }}">Mes articles</a>
                     <a href="{{ route('blog.articles.create') }}" class="journal-nav-accent">Écrire</a>
                     <form action="{{ route('blog.logout') }}" method="POST" class="inline-form">
                         @csrf
@@ -29,7 +30,7 @@
     </header>
 
     @if (session('success'))
-        <div class="journal-container journal-flash" role="status">{{ session('success') }}</div>
+        <div class="journal-container journal-flash" role="status" data-flash>{{ session('success') }}</div>
     @endif
 
     @if ($errors->any())
