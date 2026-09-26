@@ -283,7 +283,25 @@ bootstrap/cache
 
 Cette création est nécessaire car certains répertoires runtime sont exclus par `.dockerignore` et ne doivent pas dépendre de fichiers vides dans Git.
 
-## 9. Configuration Render
+## 9. HTTPS derrière le proxy Render
+
+Render termine la connexion TLS avant de transmettre la requête au conteneur Laravel. Dans ce contexte, Laravel peut recevoir la requête interne en HTTP et générer des URLs d'assets en `http://`, même lorsque le visiteur utilise HTTPS.
+
+Le fichier `app/Providers/AppServiceProvider.php` force donc le schéma HTTPS en production :
+
+```php
+if ($this->app->isProduction()) {
+    URL::forceScheme('https');
+}
+```
+
+Sans ce réglage, le navigateur bloque les fichiers CSS et JavaScript comme contenu mixte. La variable Render `APP_URL` doit malgré tout rester configurée avec l'URL publique HTTPS :
+
+```text
+https://blog-laravel-9q6j.onrender.com
+```
+
+## 10. Configuration Render
 
 Le fichier `render.yaml` déclare un service web Docker :
 
@@ -302,7 +320,7 @@ Les appels suivants dans les logs sont normaux :
 
 Render appelle régulièrement `/up` pour vérifier que l'application répond. Ce ne sont pas des requêtes d'image.
 
-## 10. Procédure de déploiement
+## 11. Procédure de déploiement
 
 Après chaque modification de code :
 
@@ -325,7 +343,7 @@ Dans Render :
 6. Attendre le statut `Live`.
 7. Ouvrir l'URL publique du service.
 
-## 11. Diagnostic des erreurs rencontrées
+## 12. Diagnostic des erreurs rencontrées
 
 ### Erreur PHP pendant Composer
 
@@ -372,11 +390,19 @@ Cause : absence de configuration `config/view.php` et de chemin `view.compiled`.
 
 Correction : ajouter `config/view.php` et créer les répertoires runtime dans le Dockerfile.
 
+### CSS absent malgré un déploiement réussi
+
+Symptôme : la page HTML s'affiche sans style et le navigateur bloque les fichiers `/build/assets/*.css`.
+
+Diagnostic : vérifier le code source HTML. Si les liens commencent par `http://` alors que le site est ouvert en `https://`, il s'agit d'un problème de schéma généré par Laravel derrière le proxy Render.
+
+Correction : conserver `APP_URL` en HTTPS et activer `URL::forceScheme('https')` en production dans `AppServiceProvider`.
+
 ### Logs d'application vides
 
 Si Render affiche `No logs in the past 7 days`, le conteneur n'a probablement pas démarré. Dans ce cas, consulter les logs du déploiement ou les Build logs, pas uniquement les Application logs.
 
-## 12. Vérifications locales avant un nouveau déploiement
+## 13. Vérifications locales avant un nouveau déploiement
 
 Vérifier Composer :
 
@@ -412,7 +438,7 @@ php artisan migrate:status
 php artisan migrate --force
 ```
 
-## 13. Sécurité des secrets
+## 14. Sécurité des secrets
 
 Les secrets déjà exposés dans un log, un fichier partagé ou une conversation doivent être considérés comme compromis :
 
