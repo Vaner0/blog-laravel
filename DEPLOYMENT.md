@@ -98,7 +98,23 @@ composer require laravel/boost --dev
 php artisan boost:install
 ```
 
-## 4. Configuration des variables d'environnement
+## 4. Images d'articles
+
+Le formulaire de création et de modification accepte désormais un fichier JPEG, PNG ou WebP de 5 Mo maximum. Le serveur :
+
+1. vérifie le type d'image ;
+2. redimensionne l'image à 1600 pixels de largeur maximum ;
+3. la convertit en WebP avec une qualité de 78 ;
+4. la stocke dans `storage/app/public/articles` ;
+5. l'affiche avec les mêmes dimensions visuelles que les cartes grâce à `object-fit: cover`.
+
+Le Dockerfile installe GD avec le support JPEG, PNG et WebP. `storage:link` est exécuté au démarrage pour rendre les fichiers disponibles sous `/storage`.
+
+Le stockage local d'un service Render gratuit est éphémère : les images peuvent disparaître lors d'un nouveau déploiement ou d'un redémarrage complet. Pour conserver les uploads en production, il faudra remplacer le disque `public` par un stockage objet persistant comme Amazon S3, Cloudflare R2 ou un service d'images dédié.
+
+Les articles qui utilisent déjà une URL externe continuent de fonctionner.
+
+## 5. Configuration des variables d'environnement
 
 En production, les valeurs doivent être saisies dans Render, dans **Environment**. Elles ne doivent pas être écrites dans le dépôt.
 
@@ -168,7 +184,7 @@ REDIS_URL="rediss://..."
 
 Les anciennes variables `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` et `DB_PASSWORD` doivent être supprimées si elles contiennent des valeurs locales ou contradictoires. Avec `DB_URL`, elles ne sont pas nécessaires.
 
-## 5. Générer une clé Laravel
+## 6. Générer une clé Laravel
 
 Depuis le projet local :
 
@@ -180,7 +196,7 @@ Copier la valeur affichée dans Render, dans la variable `APP_KEY`. Ne jamais la
 
 Si une clé a été exposée publiquement, elle doit être remplacée. Le changement de `APP_KEY` peut rendre illisibles des données chiffrées avec l'ancienne clé.
 
-## 6. Création des services distants
+## 7. Création des services distants
 
 ### Neon
 
@@ -214,7 +230,7 @@ Sans cette variable, Laravel peut échouer avec :
 ERR Only 0th database is supported! Selected DB: 1
 ```
 
-## 7. Structure du déploiement Docker
+## 8. Structure du déploiement Docker
 
 Le `Dockerfile` utilise deux étapes.
 
@@ -277,7 +293,7 @@ php artisan view:cache
 
 Les migrations et le seeder sont donc exécutés au démarrage du service, avant le serveur HTTP.
 
-## 8. Configuration Blade ajoutée
+## 9. Configuration Blade ajoutée
 
 Le projet ne possédait pas de `config/view.php`. Laravel ne connaissait donc pas le chemin de compilation Blade et `php artisan view:cache` échouait avec :
 
@@ -309,7 +325,7 @@ bootstrap/cache
 
 Cette création est nécessaire car certains répertoires runtime sont exclus par `.dockerignore` et ne doivent pas dépendre de fichiers vides dans Git.
 
-## 9. HTTPS derrière le proxy Render
+## 10. HTTPS derrière le proxy Render
 
 Render termine la connexion TLS avant de transmettre la requête au conteneur Laravel. Dans ce contexte, Laravel peut recevoir la requête interne en HTTP et générer des URLs d'assets en `http://`, même lorsque le visiteur utilise HTTPS.
 
@@ -327,7 +343,7 @@ Sans ce réglage, le navigateur bloque les fichiers CSS et JavaScript comme cont
 https://blog-laravel-9q6j.onrender.com
 ```
 
-## 10. Configuration Render
+## 11. Configuration Render
 
 Le fichier `render.yaml` déclare un service web Docker :
 
@@ -346,7 +362,7 @@ Les appels suivants dans les logs sont normaux :
 
 Render appelle régulièrement `/up` pour vérifier que l'application répond. Ce ne sont pas des requêtes d'image.
 
-## 11. Procédure de déploiement
+## 12. Procédure de déploiement
 
 Après chaque modification de code :
 
@@ -369,7 +385,7 @@ Dans Render :
 6. Attendre le statut `Live`.
 7. Ouvrir l'URL publique du service.
 
-## 12. Diagnostic des erreurs rencontrées
+## 13. Diagnostic des erreurs rencontrées
 
 ### Erreur PHP pendant Composer
 
@@ -428,7 +444,7 @@ Correction : conserver `APP_URL` en HTTPS et activer `URL::forceScheme('https')`
 
 Si Render affiche `No logs in the past 7 days`, le conteneur n'a probablement pas démarré. Dans ce cas, consulter les logs du déploiement ou les Build logs, pas uniquement les Application logs.
 
-## 13. Vérifications locales avant un nouveau déploiement
+## 14. Vérifications locales avant un nouveau déploiement
 
 Vérifier Composer :
 
@@ -464,7 +480,7 @@ php artisan migrate:status
 php artisan migrate --force
 ```
 
-## 14. Sécurité des secrets
+## 15. Sécurité des secrets
 
 Les secrets déjà exposés dans un log, un fichier partagé ou une conversation doivent être considérés comme compromis :
 

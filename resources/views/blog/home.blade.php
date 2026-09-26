@@ -34,7 +34,7 @@
             @endif
         </div>
         <div class="journal-hero-media">
-            <img src="{{ $articleVedette?->image ?: $images[0] }}" alt="Une personne lisant un journal">
+            <img src="{{ $articleVedette?->image ? (\Illuminate\Support\Str::startsWith($articleVedette->image, ['http://', 'https://']) ? $articleVedette->image : \Illuminate\Support\Facades\Storage::disk('public')->url($articleVedette->image)) : $images[0] }}" alt="Une personne lisant un journal">
             <p class="journal-image-caption">Chroniques du quotidien</p>
         </div>
     </section>
@@ -53,7 +53,7 @@
                 @foreach ($articlesRecents as $article)
                     <article class="journal-card">
                         <a href="{{ route('blog.articles.show', $article->slug) }}" class="journal-card-link">
-                            <img src="{{ $article->image ?: $images[($loop->index + 1) % count($images)] }}" alt="Illustration de {{ $article->titre }}">
+                            <img src="{{ $article->image ? (\Illuminate\Support\Str::startsWith($article->image, ['http://', 'https://']) ? $article->image : \Illuminate\Support\Facades\Storage::disk('public')->url($article->image)) : $images[($loop->index + 1) % count($images)] }}" alt="Illustration de {{ $article->titre }}">
                             <div class="journal-card-body">
                                 <p class="journal-kicker">{{ ['Voyages', 'Culture', 'Nature', 'Design', 'À table', 'Création'][$loop->index % 6] }}</p>
                                 <h3>{{ $article->titre }}</h3>

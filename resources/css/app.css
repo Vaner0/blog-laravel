@@ -625,6 +625,38 @@ textarea {
     outline: none;
 }
 
+.journal-field input[type='file'],
+.journal-field select {
+    min-height: 2.75rem;
+    cursor: pointer;
+    background: #fffdf8;
+}
+
+.journal-field input[type='file'] {
+    padding: 0.55rem;
+}
+
+.journal-field input[type='file']::file-selector-button {
+    margin-right: 0.75rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid #d7d0c3;
+    border-radius: 999px;
+    cursor: pointer;
+    background: #f1ece3;
+    color: #344b3d;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.journal-field select {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: linear-gradient(45deg, transparent 50%, #52684d 50%), linear-gradient(135deg, #52684d 50%, transparent 50%);
+    background-position: calc(100% - 1rem) 1.15rem, calc(100% - 0.7rem) 1.15rem;
+    background-repeat: no-repeat;
+    background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+}
+
 .journal-field input:focus,
 .journal-field select:focus,
 .journal-field textarea:focus,
@@ -677,6 +709,42 @@ textarea {
     font-size: 0.68rem;
     text-decoration: underline;
     text-underline-offset: 0.15rem;
+}
+
+.journal-control {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.journal-control-edit {
+    border-color: #d7d0c3;
+    background: #f1ece3;
+    color: #344b3d;
+}
+
+.journal-control-edit:hover {
+    border-color: #52684d;
+    background: #e3eadf;
+}
+
+.journal-control-delete {
+    border-color: #e5b6a8;
+    background: #fbebe6;
+    color: #9a3e2e;
+}
+
+.journal-control-delete:hover {
+    border-color: #bd5a42;
+    background: #f7d8cf;
 }
 
 .journal-form-page {

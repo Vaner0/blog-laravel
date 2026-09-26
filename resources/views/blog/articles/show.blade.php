@@ -12,11 +12,11 @@
                 <span>{{ $article->created_at->translatedFormat('j F Y') }}</span>
                 @auth
                     @if (auth()->id() === $article->user_id)
-                        <a href="{{ route('blog.articles.edit', $article) }}" class="journal-text-link">Modifier</a>
+                        <a href="{{ route('blog.articles.edit', $article) }}" class="journal-control journal-control-edit">Modifier</a>
                         <form action="{{ route('blog.articles.destroy', $article) }}" method="POST" class="inline-form" onsubmit="return confirm('Supprimer cet article ?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="journal-danger-link">Supprimer</button>
+                            <button type="submit" class="journal-control journal-control-delete">Supprimer</button>
                         </form>
                     @endif
                 @endauth
@@ -26,7 +26,7 @@
         <div class="journal-article-layout">
             <div class="journal-article-body">
                 @if ($article->image)
-                    <img class="journal-article-image" src="{{ $article->image }}" alt="Illustration de {{ $article->titre }}">
+                    <img class="journal-article-image" src="{{ \Illuminate\Support\Str::startsWith($article->image, ['http://', 'https://']) ? $article->image : \Illuminate\Support\Facades\Storage::disk('public')->url($article->image) }}" alt="Illustration de {{ $article->titre }}">
                 @endif
                 <div class="journal-prose">
                     {!! nl2br(e($article->contenu)) !!}
@@ -62,7 +62,7 @@
                                     <form action="{{ route('blog.comments.destroy', $commentaire) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="journal-danger-link">Supprimer</button>
+                                        <button type="submit" class="journal-control journal-control-delete">Supprimer</button>
                                     </form>
                                 @endif
                             @endauth
