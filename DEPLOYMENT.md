@@ -147,6 +147,12 @@ Variables attendues :
 | `GOOGLE_CLIENT_SECRET` | Secret client Google | Secret OAuth Google. |
 | `GOOGLE_REDIRECT_URI` | URL callback publique | `https://blog-laravel-9q6j.onrender.com/connexion/google/callback` |
 
+### Gestion des erreurs
+
+Laravel journalise automatiquement les exceptions inattendues. En production, `APP_DEBUG=false` masque les détails techniques aux visiteurs et `LOG_CHANNEL=stderr` envoie les erreurs vers les journaux du service Render. Pour diagnostiquer une erreur, consulte **Render > service web > Logs** et recherche l'heure de la requête. Ne demande jamais aux utilisateurs de publier une trace contenant des données privées.
+
+Les pages web utilisent des écrans dédiés pour les erreurs `404`, `500` et `503`. Les routes API conservent les réponses JSON Laravel, sans message d'exception ni trace en production. Les champs `mot_de_passe` et `mot_de_passe_confirmation` ne sont pas conservés dans l'ancienne saisie de session après une erreur de validation.
+
 ### Google OAuth
 
 Google OAuth utilise Laravel Socialite. Dans Google Cloud Console, crée un client OAuth de type **Application Web**, puis ajoute cette URL dans les **URI de redirection autorisés** :

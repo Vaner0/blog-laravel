@@ -64,4 +64,22 @@ class WebAuthControllerTest extends TestCase
             ->assertSessionHasErrors('email');
         $this->assertGuest();
     }
+
+    public function test_registration_validation_does_not_flash_password_fields(): void
+    {
+        $response = $this->from('/inscription')->post('/inscription', [
+            'nom' => 'Nora Dupont',
+            'email' => 'nora@example.com',
+            'mot_de_passe' => 'password123',
+            'mot_de_passe_confirmation' => 'different-password',
+        ]);
+
+        $response->assertRedirect('/inscription')
+            ->assertSessionHasErrors('mot_de_passe')
+            ->assertSessionHas('_old_input', function (array $oldInput): bool {
+                return ! array_key_exists('mot_de_passe', $oldInput)
+                    && ! array_key_exists('mot_de_passe_confirmation', $oldInput)
+                    && $oldInput['email'] === 'nora@example.com';
+            });
+    }
 }
