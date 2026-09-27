@@ -10,7 +10,7 @@
             <p>Une idée, une observation, un endroit à raconter. Prenez le temps de poser vos mots.</p>
         </div>
 
-        <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" class="journal-form">
+        <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" class="journal-form" data-article-form>
             @csrf
             @if ($formMethod !== 'POST')
                 @method($formMethod)
@@ -39,8 +39,10 @@
                 </div>
                 <div class="journal-field">
                     <label for="image_fichier">Image de couverture <span>(optionnel)</span></label>
-                    <input id="image_fichier" name="image_fichier" type="file" accept="image/jpeg,image/png,image/webp">
-                    <p class="journal-field-note">JPEG, PNG ou WebP, 10 Mo maximum. L'image sera redimensionnée et compressée automatiquement.</p>
+                    <input id="image_fichier" name="image_fichier" type="file" accept="image/jpeg,image/png,image/webp" data-article-image>
+                    <p class="journal-field-note">JPEG, PNG ou WebP. L’image est redimensionnée et compressée dans votre navigateur avant l’envoi.</p>
+                    <p class="journal-field-note" data-image-status aria-live="polite"></p>
+                    <p class="journal-field-note journal-image-error" data-image-error role="alert" hidden></p>
                     @if ($article->image)
                         <p class="journal-field-note">Une image est déjà associée à cet article.</p>
                     @endif

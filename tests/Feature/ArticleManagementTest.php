@@ -217,4 +217,16 @@ class ArticleManagementTest extends TestCase
         $this->get(route('blog.articles.index'))
             ->assertRedirect(route('login'));
     }
+
+    public function test_article_form_prepares_images_for_browser_compression(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $this->get(route('blog.articles.create'))
+            ->assertOk()
+            ->assertSee('data-article-form', false)
+            ->assertSee('data-article-image', false)
+            ->assertSee('data-image-status', false)
+            ->assertSee('compressée dans votre navigateur avant l’envoi');
+    }
 }
