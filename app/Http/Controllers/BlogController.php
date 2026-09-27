@@ -72,7 +72,7 @@ class BlogController extends Controller
             'contenu' => ['required', 'string'],
             'statut' => ['required', 'in:brouillon,publie'],
             'image' => ['nullable', 'url', 'max:2048'],
-            'image_fichier' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
+            'image_fichier' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:10240'],
         ]);
 
         if ($request->hasFile('image_fichier')) {
@@ -114,7 +114,7 @@ class BlogController extends Controller
             'contenu' => ['required', 'string'],
             'statut' => ['required', 'in:brouillon,publie'],
             'image' => ['nullable', 'url', 'max:2048'],
-            'image_fichier' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
+            'image_fichier' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:10240'],
         ]);
 
         $oldImage = $article->image;

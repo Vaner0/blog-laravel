@@ -100,7 +100,7 @@ php artisan boost:install
 
 ## 4. Images d'articles
 
-Le formulaire de création et de modification accepte désormais un fichier JPEG, PNG ou WebP de 5 Mo maximum. Le serveur :
+Le formulaire de création et de modification accepte désormais un fichier JPEG, PNG ou WebP de 10 Mo maximum. Le serveur :
 
 1. vérifie le type d'image ;
 2. redimensionne l'image à 1600 pixels de largeur maximum ;
@@ -108,7 +108,7 @@ Le formulaire de création et de modification accepte désormais un fichier JPEG
 4. l'envoie vers Cloudinary dans le dossier `blog/articles` ;
 5. l'affiche avec les mêmes dimensions visuelles que les cartes grâce à `object-fit: cover`.
 
-Le Dockerfile installe GD avec le support JPEG, PNG et WebP. Le serveur crée temporairement une version WebP légère, l'envoie à Cloudinary, puis supprime le fichier temporaire. Seule l'URL HTTPS Cloudinary et son `public_id` sont conservés dans PostgreSQL.
+Le Dockerfile installe GD avec le support JPEG, PNG et WebP et configure `upload_max_filesize` à 12 Mo et `post_max_size` à 16 Mo afin que PHP accepte la requête complète avant la validation Laravel. Le serveur crée temporairement une version WebP légère, l'envoie à Cloudinary, puis supprime le fichier temporaire. Seule l'URL HTTPS Cloudinary et son `public_id` sont conservés dans PostgreSQL.
 
 Ajoute dans Render :
 

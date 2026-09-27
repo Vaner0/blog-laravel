@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class ArticleManagementTest extends TestCase
@@ -53,6 +55,40 @@ class ArticleManagementTest extends TestCase
             'user_id' => $user->id,
             'slug' => 'mon-recit-publie',
             'statut' => 'publie',
+        ]);
+    }
+
+    public function test_accepts_an_image_upload_larger_than_the_previous_php_post_limit(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->mock(ImageService::class)
+            ->shouldReceive('storeArticleImage')
+            ->once()
+            ->andReturn([
+                'url' => 'https://res.cloudinary.com/demo/image/upload/large.webp',
+                'public_id' => 'blog/articles/large',
+            ]);
+
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', true);
+        $largeImage = UploadedFile::fake()->createWithContent(
+            'couverture.png',
+            $png.str_repeat('0', 8_500_000 - strlen($png)),
+        );
+
+        $this->post(route('blog.articles.store'), [
+            'titre' => 'Article avec une grande image',
+            'contenu' => 'La requête dépasse huit mégaoctets.',
+            'statut' => 'publie',
+            'image_fichier' => $largeImage,
+        ])->assertRedirect(route('blog.articles.index', ['statut' => 'publie']))
+            ->assertSessionHas('success', 'Article publié avec succès.');
+
+        $this->assertDatabaseHas('articles', [
+            'user_id' => $user->id,
+            'slug' => 'article-avec-une-grande-image',
+            'image_public_id' => 'blog/articles/large',
         ]);
     }
 

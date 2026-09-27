@@ -40,7 +40,7 @@
                 <div class="journal-field">
                     <label for="image_fichier">Image de couverture <span>(optionnel)</span></label>
                     <input id="image_fichier" name="image_fichier" type="file" accept="image/jpeg,image/png,image/webp">
-                    <p class="journal-field-note">JPEG, PNG ou WebP, 5 Mo maximum. L'image sera redimensionnée et compressée automatiquement.</p>
+                    <p class="journal-field-note">JPEG, PNG ou WebP, 10 Mo maximum. L'image sera redimensionnée et compressée automatiquement.</p>
                     @if ($article->image)
                         <p class="journal-field-note">Une image est déjà associée à cet article.</p>
                     @endif
